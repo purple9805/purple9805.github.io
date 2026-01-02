@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamVault - Your Personal Cinema</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-card: #1a1a1a;
+            --accent-red: #e50914;
+            --accent-gold: #f5c518;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-dim: #6b6b6b;
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --glow-red: rgba(229, 9, 20, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ========================================
+           NAVIGATION BAR
+        ======================================== */
+        
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            transition: background 0.3s ease;
+            padding: 0 4%;
+        }
+
+        nav.scrolled {
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .nav-content {
+            max-width: 1920px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2em;
+            letter-spacing: 3px;
+            color: var(--accent-red);
+            text-shadow: 0 0 20px var(--glow-red);
+            cursor: pointer;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { text-shadow: 0 0 20px var(--glow-red); }
+            50% { text-shadow: 0 0 30px var(--glow-red), 0 0 40px var(--glow-red); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2em;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-red);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5em;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        #searchInput {
+            width: 250px;
+            padding: 10px 45px 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: 25px;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-red);
+            width: 300px;
+            box-shadow: 0 0 20px var(--glow-red);
+        }
+
+        #searchInput::placeholder {
+            color: var(--text-dim);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            pointer-events: none;
+        }
+
+        .user-profile {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-gold));
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .user-profile:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--glow-red);
+        }
+
+        /* ========================================
+           HERO SECTION
+        ======================================== */
+
+        .hero {
+            position: relative;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            margin-top: 70px;
+            background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.9) 100%),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080"><rect fill="%23141414" width="1920" height="1080"/><text x="50%" y="50%" fill="%23333" font-size="120" text-anchor="middle" dy=".3em" font-family="Arial">🎬</text></svg>');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(to top, var(--bg-primary), transparent);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 650px;
+            padding: 0 4%;
+            animation: fadeInUp 1s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--accent-red);
+            color: var(--text-primary);
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1em;
+            animation: fadeInUp 1s ease 0.2s backwards;
+        }
+
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4.5em;
+            line-height: 0.95;
+            margin-bottom: 0.3em;
+            letter-spacing: 2px;
+            animation: fadeInUp 1s ease 0.3s backwards;
+        }
+
+        .hero-description {
+            font-size: 1.15em;
+            color: var(--text-secondary);
+            margin-bottom: 2em;
+            line-height: 1.7;
+            animation: fadeInUp 1s ease 0.4s backwards;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 2em;
+            margin-bottom: 2em;
+            font-size: 0.95em;
+            animation: fadeInUp 1s ease 0.5s backwards;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            color: var(--text-secondary);
+        }
+
+        .rating {
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1em;
+            animation: fadeInUp 1s ease 0.6s backwards;
+        }
+
+        .btn {
+            padding: 14px 36px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-red);
+            color: var(--text-primary);
+            box-shadow: 0 4px 20px var(--glow-red);
+        }
+
+        .btn-primary:hover {
+            background: #ff0a16;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px var(--glow-red);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* ========================================
+           CONTENT SECTIONS
+        ======================================== */
+
+        .content-wrapper {
+            padding: 0 4%;
+            margin-top: -100px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .section {
+            margin-bottom: 4em;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5em;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8em;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .view-all {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .view-all:hover {
+            color: var(--accent-red);
+        }
+
+        /* ========================================
+           FILTER TABS
+        ======================================== */
+
+        .filter-tabs {
+            display: flex;
+            gap: 1em;
+            margin-bottom: 2em;
+            overflow-x: auto;
+            padding-bottom: 1em;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-red) var(--bg-secondary);
+        }
+
+        .filter-tabs::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .filter-tabs::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+        }
+
+        .filter-tabs::-webkit-scrollbar-thumb {
+            background: var(--accent-red);
+            border-radius: 10px;
+        }
+
+        .filter-tab {
+            padding: 10px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 25px;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .filter-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent-red);
+            color: var(--text-primary);
+        }
+
+        .filter-tab.active {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: var(--text-primary);
+            box-shadow: 0 4px 15px var(--glow-red);
+        }
+
+        /* ========================================
+           MOVIE GRID
+        ======================================== */
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5em;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .movie-card {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-card);
+            animation: scaleIn 0.5s ease backwards;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .movie-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        }
+
+        .movie-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%);
+            padding: 1.5em 1em 1em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .movie-card:hover .movie-overlay {
+            opacity: 1;
+        }
+
+        .movie-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 0.3em;
+            line-height: 1.3;
+        }
+
+        .movie-meta-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5em;
+        }
+
+        .movie-actions {
+            display: flex;
+            gap: 0.5em;
+            margin-top: 0.8em;
+        }
+
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid var(--text-primary);
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 0.85em;
+        }
+
+        .action-btn:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            transform: scale(1.1);
+        }
+
+        .action-btn.play {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+        }
+
+        .action-btn.play:hover {
+            background: #ff0a16;
+            box-shadow: 0 0 20px var(--glow-red);
+        }
+
+        /* ========================================
+           CAROUSEL
+        ======================================== */
+
+        .carousel-container {
+            position: relative;
+            margin-bottom: 2em;
+        }
+
+        .carousel {
+            display: flex;
+            gap: 1em;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding-bottom: 1em;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-red) var(--bg-secondary);
+        }
+
+        .carousel::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .carousel::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+        }
+
+        .carousel::-webkit-scrollbar-thumb {
+            background: var(--accent-red);
+            border-radius: 10px;
+        }
+
+        .carousel-card {
+            min-width: 280px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: slideIn 0.5s ease backwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .carousel-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .carousel-poster {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        }
+
+        .carousel-content {
+            padding: 1.2em;
+        }
+
+        .carousel-title {
+            font-weight: 700;
+            font-size: 1.05em;
+            margin-bottom: 0.5em;
+            line-height: 1.3;
+        }
+
+        .carousel-description {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--border-subtle);
+            border-radius: 50%;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+        }
+
+        .carousel-nav:hover {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            box-shadow: 0 0 20px var(--glow-red);
+        }
+
+        .carousel-nav.prev {
+            left: -20px;
+        }
+
+        .carousel-nav.next {
+            right: -20px;
+        }
+
+        /* ========================================
+           MODAL / VIDEO PLAYER
+        ======================================== */
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2em;
+        }
+
+        .modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-primary);
+            font-size: 1.5em;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--accent-red);
+            transform: rotate(90deg);
+        }
+
+        .video-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+
+        .modal-info {
+            padding: 2em;
+        }
+
+        .modal-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+            letter-spacing: 1px;
+        }
+
+        .modal-meta {
+            display: flex;
+            gap: 2em;
+            margin-bottom: 1.5em;
+            color: var(--text-secondary);
+            font-size: 0.95em;
+        }
+
+        .modal-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5em;
+        }
+
+        .modal-tags {
+            display: flex;
+            gap: 0.8em;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+
+        /* ========================================
+           FOOTER
+        ======================================== */
+
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            padding: 3em 4%;
+            margin-top: 6em;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2em;
+        }
+
+        .footer-section h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3em;
+            margin-bottom: 1em;
+            letter-spacing: 1px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8em;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95em;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-red);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2em;
+            margin-top: 2em;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-dim);
+            font-size: 0.9em;
+        }
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            #searchInput {
+                width: 180px;
+            }
+
+            #searchInput:focus {
+                width: 200px;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+
+            .hero-title {
+                font-size: 3em;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .movie-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1em;
+            }
+
+            .section-title {
+                font-size: 1.4em;
+            }
+
+            .carousel-card {
+                min-width: 240px;
+            }
+        }
+
+        /* ========================================
+           UTILITY CLASSES
+        ======================================== */
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3em;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-subtle);
+            border-top-color: var(--accent-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1em;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 4em 2em;
+            color: var(--text-secondary);
+        }
+
+        .no-results-icon {
+            font-size: 4em;
+            margin-bottom: 0.5em;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav id="navbar">
+        <div class="nav-content">
+            <div class="logo">STREAMVAULT</div>
+            
+            <ul class="nav-links">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#movies">Movies</a></li>
+                <li><a href="#tv">TV Shows</a></li>
+                <li><a href="#documentaries">Documentaries</a></li>
+                <li><a href="#classics">Classics</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search titles, genres...">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <div class="user-profile" title="User Profile">U</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <span class="hero-badge">Featured Today</span>
+            <h1 class="hero-title">CINEMATIC TREASURES AWAIT</h1>
+            <p class="hero-description">
+                Discover thousands of free, legal movies and shows. From timeless classics 
+                to modern masterpieces, your next favorite film is just a click away.
+            </p>
+            <div class="hero-meta">
+                <span class="meta-item"><span class="rating">★ 8.5</span>/10</span>
+                <span class="meta-item">📅 2024</span>
+                <span class="meta-item">⏱️ 2h 15m</span>
+            </div>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="playFeatured()">
+                    ▶ Play Now
+                </button>
+                <button class="btn btn-secondary">
+                    ℹ More Info
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <div class="content-wrapper">
+        
+        <!-- FILTER TABS -->
+        <div class="filter-tabs" id="filterTabs">
+            <div class="filter-tab active" data-filter="all">All Content</div>
+            <div class="filter-tab" data-filter="movies">Movies</div>
+            <div class="filter-tab" data-filter="youtube">YouTube</div>
+            <div class="filter-tab" data-filter="archive">Internet Archive</div>
+            <div class="filter-tab" data-filter="classics">Public Domain</div>
+            <div class="filter-tab" data-filter="documentary">Documentaries</div>
+            <div class="filter-tab" data-filter="action">Action</div>
+            <div class="filter-tab" data-filter="drama">Drama</div>
+            <div class="filter-tab" data-filter="comedy">Comedy</div>
+        </div>
+
+        <!-- TRENDING CAROUSEL -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">🔥 Trending Now</h2>
+                <a href="#" class="view-all">View All →</a>
+            </div>
+            <div class="carousel-container">
+                <div class="carousel-nav prev" onclick="scrollCarousel('trending', -1)">❮</div>
+                <div class="carousel" id="trendingCarousel">
+                    <!-- Dynamic content loaded by JavaScript -->
+                </div>
+                <div class="carousel-nav next" onclick="scrollCarousel('trending', 1)">❯</div>
+            </div>
+        </section>
+
+        <!-- MAIN MOVIE GRID -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">🎬 All Movies & Shows</h2>
+                <span class="view-all" id="resultCount">Loading...</span>
+            </div>
+            <div class="movie-grid" id="movieGrid">
+                <!-- Dynamic content loaded by JavaScript -->
+            </div>
+        </section>
+
+        <!-- CLASSICS SECTION -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">🎭 Classic Cinema</h2>
+                <a href="#" class="view-all">View All →</a>
+            </div>
+            <div class="carousel-container">
+                <div class="carousel-nav prev" onclick="scrollCarousel('classics', -1)">❮</div>
+                <div class="carousel" id="classicsCarousel">
+                    <!-- Dynamic content loaded by JavaScript -->
+                </div>
+                <div class="carousel-nav next" onclick="scrollCarousel('classics', 1)">❯</div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- VIDEO MODAL -->
+    <div class="modal" id="videoModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <iframe class="video-player" id="videoPlayer" frameborder="0" allowfullscreen></iframe>
+            <div class="modal-info">
+                <h2 class="modal-title" id="modalTitle">Movie Title</h2>
+                <div class="modal-meta">
+                    <span id="modalYear">2024</span>
+                    <span id="modalRating">★ 8.5</span>
+                    <span id="modalDuration">2h 15m</span>
+                    <span id="modalSource">Source</span>
+                </div>
+                <p class="modal-description" id="modalDescription">
+                    Movie description will appear here...
+                </p>
+                <div class="modal-tags" id="modalTags">
+                    <!-- Dynamic tags -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>StreamVault</h3>
+                <p style="color: var(--text-secondary); line-height: 1.7;">
+                    Your personal gateway to thousands of free, legal movies and shows. 
+                    All content sourced from public domain and official free channels.
+                </p>
+            </div>
+            <div class="footer-section">
+                <h3>Browse</h3>
+                <ul class="footer-links">
+                    <li><a href="#movies">Movies</a></li>
+                    <li><a href="#tv">TV Shows</a></li>
+                    <li><a href="#documentaries">Documentaries</a></li>
+                    <li><a href="#classics">Classic Films</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Sources</h3>
+                <ul class="footer-links">
+                    <li><a href="#">YouTube Free Movies</a></li>
+                    <li><a href="#">Internet Archive</a></li>
+                    <li><a href="#">Public Domain</a></li>
+                    <li><a href="#">About Our Content</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <ul class="footer-links">
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Privacy</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 StreamVault. All content is sourced from legal, free sources. Made with ❤️ for film lovers.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // ========================================
+        // SAMPLE DATA
+        // Replace with actual API calls to fetch real content
+        // ========================================
+
+        const sampleMovies = [
+            {
+                id: 1,
+                title: "The Great Train Robbery",
+                year: "1903",
+                rating: "8.2",
+                duration: "12m",
+                source: "Internet Archive",
+                category: "classics",
+                genre: "action",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%23667eea' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='60' text-anchor='middle' dy='.3em'%3E🚂%3C/text%3E%3C/svg%3E",
+                description: "A classic silent film depicting a dramatic train robbery and the pursuit that follows.",
+                url: "https://archive.org/details/TheGreatTrainRobbery"
+            },
+            {
+                id: 2,
+                title: "Metropolis",
+                year: "1927",
+                rating: "8.3",
+                duration: "2h 33m",
+                source: "Public Domain",
+                category: "classics",
+                genre: "drama",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%23764ba2' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='60' text-anchor='middle' dy='.3em'%3E🏙️%3C/text%3E%3C/svg%3E",
+                description: "A groundbreaking sci-fi masterpiece about a dystopian future city divided by class.",
+                url: "https://archive.org/details/Metropolis"
+            },
+            {
+                id: 3,
+                title: "Night of the Living Dead",
+                year: "1968",
+                rating: "7.9",
+                duration: "1h 36m",
+                source: "Public Domain",
+                category: "movies",
+                genre: "horror",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%23e50914' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='60' text-anchor='middle' dy='.3em'%3E🧟%3C/text%3E%3C/svg%3E",
+                description: "The film that started the zombie genre. A group of people trapped in a farmhouse battle the undead.",
+                url: "https://archive.org/details/night_of_the_living_dead"
+            },
+            {
+                id: 4,
+                title: "Free Documentary Collection",
+                year: "2024",
+                rating: "8.5",
+                duration: "varies",
+                source: "YouTube",
+                category: "documentary",
+                genre: "documentary",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%23ff0000' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='60' text-anchor='middle' dy='.3em'%3E📹%3C/text%3E%3C/svg%3E",
+                description: "Explore fascinating documentaries on nature, science, history, and culture.",
+                url: "https://www.youtube.com/"
+            },
+            {
+                id: 5,
+                title: "His Girl Friday",
+                year: "1940",
+                rating: "8.0",
+                duration: "1h 32m",
+                source: "Public Domain",
+                category: "classics",
+                genre: "comedy",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%23f5c518' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='60' text-anchor='middle' dy='.3em'%3E😄%3C/text%3E%3C/svg%3E",
+                description: "A classic screwball comedy about a newspaper editor trying to win back his ex-wife.",
+                url: "https://archive.org/details/HisGirlFriday"
+            },
+            {
+                id: 6,
+                title: "The Cabinet of Dr. Caligari",
+                year: "1920",
+                rating: "8.1",
+                duration: "1h 17m",
+                source: "Public Domain",
+                category: "classics",
+                genre: "horror",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%23333' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='60' text-anchor='middle' dy='.3em'%3E🎭%3C/text%3E%3C/svg%3E",
+                description: "A landmark of German Expressionist cinema with twisted visuals and an iconic twist ending.",
+                url: "https://archive.org/details/TheCabinetOfDr.Caligari"
+            },
+            {
+                id: 7,
+                title: "YouTube Originals",
+                year: "2024",
+                rating: "7.8",
+                duration: "varies",
+                source: "YouTube",
+                category: "youtube",
+                genre: "various",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%23ff0000' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='40' text-anchor='middle' dy='.3em'%3EYOUTUBE%3C/text%3E%3C/svg%3E",
+                description: "Free original content from YouTube's premium collection, now available to all.",
+                url: "https://www.youtube.com/"
+            },
+            {
+                id: 8,
+                title: "Archive Cinema Classics",
+                year: "Various",
+                rating: "8.4",
+                duration: "varies",
+                source: "Internet Archive",
+                category: "archive",
+                genre: "various",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%2300d4aa' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='50' text-anchor='middle' dy='.3em'%3EARCHIVE%3C/text%3E%3C/svg%3E",
+                description: "Thousands of classic films preserved and freely available from the Internet Archive.",
+                url: "https://archive.org/details/feature_films"
+            },
+            {
+                id: 9,
+                title: "Nosferatu",
+                year: "1922",
+                rating: "7.9",
+                duration: "1h 34m",
+                source: "Public Domain",
+                category: "classics",
+                genre: "horror",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%23111' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='%23ccc' font-size='60' text-anchor='middle' dy='.3em'%3E🦇%3C/text%3E%3C/svg%3E",
+                description: "The unauthorized adaptation of Dracula that became a horror cinema landmark.",
+                url: "https://archive.org/details/nosferatu"
+            },
+            {
+                id: 10,
+                title: "The Phantom of the Opera",
+                year: "1925",
+                rating: "7.8",
+                duration: "1h 33m",
+                source: "Public Domain",
+                category: "classics",
+                genre: "drama",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%23800020' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='60' text-anchor='middle' dy='.3em'%3E🎭%3C/text%3E%3C/svg%3E",
+                description: "Lon Chaney's iconic performance in this silent horror masterpiece.",
+                url: "https://archive.org/details/ThePhantomOfTheOpera"
+            },
+            {
+                id: 11,
+                title: "Sherlock Jr.",
+                year: "1924",
+                rating: "8.2",
+                duration: "45m",
+                source: "Public Domain",
+                category: "classics",
+                genre: "comedy",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%23556b2f' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='60' text-anchor='middle' dy='.3em'%3E🕵️%3C/text%3E%3C/svg%3E",
+                description: "Buster Keaton's brilliant comedy about a projectionist who dreams himself into a movie.",
+                url: "https://archive.org/details/SherlockJr"
+            },
+            {
+                id: 12,
+                title: "Free Action Movies",
+                year: "2024",
+                rating: "7.5",
+                duration: "varies",
+                source: "YouTube",
+                category: "youtube",
+                genre: "action",
+                poster: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450'%3E%3Crect fill='%23ff4500' width='300' height='450'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='60' text-anchor='middle' dy='.3em'%3E💥%3C/text%3E%3C/svg%3E",
+                description: "Full-length action movies available for free on YouTube.",
+                url: "https://www.youtube.com/"
+            }
+        ];
+
+        // ========================================
+        // STATE MANAGEMENT
+        // ========================================
+
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let allMovies = [...sampleMovies];
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            setupEventListeners();
+            renderContent();
+            setupScrollEffects();
+            
+            // Simulate loading real data
+            setTimeout(() => {
+                console.log('App initialized successfully');
+            }, 500);
+        }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+
+        function setupEventListeners() {
+            // Filter tabs
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderContent();
+                });
+            });
+
+            // Search input
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', debounce(function(e) {
+                searchQuery = e.target.value.toLowerCase();
+                renderContent();
+            }, 300));
+
+            // Close modal on background click
+            document.getElementById('videoModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            // Escape key to close modal
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        }
+
+        // ========================================
+        // SCROLL EFFECTS
+        // ========================================
+
+        function setupScrollEffects() {
+            const navbar = document.getElementById('navbar');
+            
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // Animate elements on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.movie-card, .carousel-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        }
+
+        // ========================================
+        // CONTENT RENDERING
+        // ========================================
+
+        function renderContent() {
+            const filteredMovies = filterMovies();
+            
+            renderMovieGrid(filteredMovies);
+            renderTrendingCarousel(filteredMovies.slice(0, 8));
+            renderClassicsCarousel(filteredMovies.filter(m => m.category === 'classics'));
+            
+            updateResultCount(filteredMovies.length);
+        }
+
+        function filterMovies() {
+            return allMovies.filter(movie => {
+                const matchesFilter = currentFilter === 'all' || 
+                                     movie.category === currentFilter || 
+                                     movie.genre === currentFilter ||
+                                     movie.source.toLowerCase().includes(currentFilter);
+                
+                const matchesSearch = searchQuery === '' ||
+                                     movie.title.toLowerCase().includes(searchQuery) ||
+                                     movie.description.toLowerCase().includes(searchQuery) ||
+                                     movie.genre.toLowerCase().includes(searchQuery);
+                
+                return matchesFilter && matchesSearch;
+            });
+        }
+
+        function renderMovieGrid(movies) {
+            const grid = document.getElementById('movieGrid');
+            
+            if (movies.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🎬</div>
+                        <h3>No movies found</h3>
+                        <p>Try adjusting your filters or search query</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = movies.map((movie, index) => `
+                <div class="movie-card" style="animation-delay: ${index * 0.05}s" onclick="openMovie(${movie.id})">
+                    <img src="${movie.poster}" alt="${movie.title}" class="movie-poster" 
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%23333%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22white%22 font-size=%2260%22 text-anchor=%22middle%22 dy=%22.3em%22%3E🎬%3C/text%3E%3C/svg%3E'">
+                    <div class="movie-overlay">
+                        <h3 class="movie-title">${movie.title}</h3>
+                        <div class="movie-meta-info">
+                            <span>⭐ ${movie.rating}</span>
+                            <span>${movie.year}</span>
+                            <span>${movie.duration}</span>
+                        </div>
+                        <div class="movie-actions">
+                            <button class="action-btn play" onclick="event.stopPropagation(); playMovie(${movie.id})">▶</button>
+                            <button class="action-btn" onclick="event.stopPropagation(); addToWatchlist(${movie.id})" title="Add to Watchlist">+</button>
+                            <button class="action-btn" onclick="event.stopPropagation(); likeMovie(${movie.id})" title="Like">👍</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderTrendingCarousel(movies) {
+            const carousel = document.getElementById('trendingCarousel');
+            carousel.innerHTML = movies.map(movie => `
+                <div class="carousel-card" onclick="openMovie(${movie.id})">
+                    <img src="${movie.poster}" alt="${movie.title}" class="carousel-poster">
+                    <div class="carousel-content">
+                        <h4 class="carousel-title">${movie.title}</h4>
+                        <p class="carousel-description">${movie.description}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderClassicsCarousel(movies) {
+            const carousel = document.getElementById('classicsCarousel');
+            if (movies.length === 0) {
+                carousel.innerHTML = '<p style="color: var(--text-secondary);">No classic films available</p>';
+                return;
+            }
+            carousel.innerHTML = movies.map(movie => `
+                <div class="carousel-card" onclick="openMovie(${movie.id})">
+                    <img src="${movie.poster}" alt="${movie.title}" class="carousel-poster">
+                    <div class="carousel-content">
+                        <h4 class="carousel-title">${movie.title}</h4>
+                        <p class="carousel-description">${movie.description}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateResultCount(count) {
+            document.getElementById('resultCount').textContent = `${count} titles`;
+        }
+
+        // ========================================
+        // CAROUSEL NAVIGATION
+        // ========================================
+
+        function scrollCarousel(carouselId, direction) {
+            const carousel = document.getElementById(carouselId + 'Carousel');
+            const scrollAmount = 300;
+            carousel.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+
+        // ========================================
+        // MODAL / VIDEO PLAYER
+        // ========================================
+
+        function openMovie(movieId) {
+            const movie = allMovies.find(m => m.id === movieId);
+            if (!movie) return;
+
+            document.getElementById('modalTitle').textContent = movie.title;
+            document.getElementById('modalYear').textContent = movie.year;
+            document.getElementById('modalRating').textContent = `⭐ ${movie.rating}`;
+            document.getElementById('modalDuration').textContent = movie.duration;
+            document.getElementById('modalSource').textContent = movie.source;
+            document.getElementById('modalDescription').textContent = movie.description;
+            
+            // Set video player
+            const videoPlayer = document.getElementById('videoPlayer');
+            if (movie.url.includes('youtube.com') || movie.url.includes('youtu.be')) {
+                const videoId = extractYouTubeId(movie.url);
+                videoPlayer.src = `https://www.youtube.com/embed/${videoId}`;
+            } else {
+                videoPlayer.src = movie.url;
+            }
+
+            // Show modal
+            document.getElementById('videoModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('videoModal').classList.remove('active');
+            document.getElementById('videoPlayer').src = '';
+            document.body.style.overflow = 'auto';
+        }
+
+        function playMovie(movieId) {
+            openMovie(movieId);
+        }
+
+        function playFeatured() {
+            openMovie(1); // Play first movie as featured
+        }
+
+        // ========================================
+        // USER INTERACTIONS
+        // ========================================
+
+        function addToWatchlist(movieId) {
+            const movie = allMovies.find(m => m.id === movieId);
+            console.log('Added to watchlist:', movie.title);
+            showNotification(`Added "${movie.title}" to watchlist`);
+        }
+
+        function likeMovie(movieId) {
+            const movie = allMovies.find(m => m.id === movieId);
+            console.log('Liked:', movie.title);
+            showNotification(`Liked "${movie.title}"`);
+        }
+
+        function showNotification(message) {
+            // Simple notification (you can enhance this)
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: var(--accent-red);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                z-index: 3000;
+                animation: slideIn 0.3s ease;
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // ========================================
+        // API INTEGRATION PLACEHOLDER
+        // Replace these with actual API calls
+        // ========================================
+
+        async function fetchYouTubeMovies() {
+            // TODO: Implement YouTube API integration
+            // Example: fetch('https://www.googleapis.com/youtube/v3/search?...')
+            return [];
+        }
+
+        async function fetchInternetArchive() {
+            // TODO: Implement Internet Archive API integration
+            // Example: fetch('https://archive.org/advancedsearch.php?...')
+            return [];
+        }
+
+        async function fetchPublicDomain() {
+            // TODO: Implement Public Domain API integration
+            return [];
+        }
+
+        // Initialize with sample data
+        // In production, call real APIs here
+        console.log('StreamVault Dashboard Loaded!');
+        console.log('Total movies:', allMovies.length);
+    </script>
+
+</body>
+</html>
